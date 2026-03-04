@@ -159,13 +159,16 @@
       return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
     }
 
+    // Salvestab bussiaegade sekundid live taimeri jaoks
+    const liveTimes = {};
+
     function minUntil(s) {
       const diff = s - nowSeconds();
       if (diff <= 0) return "kohal";
       if (diff < 60) return `${diff} sek`;
       const mins = Math.floor(diff / 60);
       const secs = diff % 60;
-      return `${mins}:${String(secs).padStart(2,'0')} min`;
+      return `${mins}:${String(secs).padStart(2, '0')} min`;
     }
 
     function setLoading(ids) {
@@ -180,7 +183,8 @@
       const el = document.getElementById(id);
       el.querySelector(".spinner").style.display = "none";
       el.className = "time";
-      el.innerHTML = `<div class="spinner"></div>${secToTime(sec)}<small>${labelText}</small><span class="minutes">${minUntil(sec)}</span>`;
+      el.innerHTML = `<div class="spinner"></div>${secToTime(sec)}<small>${labelText}</small><span class="minutes" data-sec="${sec}">${minUntil(sec)}</span>`;
+      liveTimes[id] = sec;
     }
 
     function setError(id, msg) {
@@ -188,6 +192,18 @@
       el.querySelector && (el.querySelector(".spinner").style.display = "none");
       el.className = "time error";
       el.innerHTML = msg;
+      delete liveTimes[id];
+    }
+
+    // Uuendab iga sekund ainult taimerit (ilma API päringuta)
+    function tickTimers() {
+      for (const id in liveTimes) {
+        const el = document.getElementById(id);
+        const span = el && el.querySelector(".minutes[data-sec]");
+        if (!span) continue;
+        const sec = parseInt(span.dataset.sec);
+        span.textContent = minUntil(sec);
+      }
     }
 
     async function fetchStop(stopId, busNum, t1id, t2id) {
@@ -210,6 +226,7 @@
           document.getElementById(t1id).className = "time";
           document.getElementById(t1id).innerHTML = `<div class="spinner"></div>--:--<small>järgmine</small>`;
           document.getElementById(t1id).querySelector(".spinner").style.display = "none";
+          delete liveTimes[t1id];
         }
 
         if (times[1]) setTime(t2id, "ülejärgmine", times[1]);
@@ -217,6 +234,7 @@
           document.getElementById(t2id).className = "time";
           document.getElementById(t2id).innerHTML = `<div class="spinner"></div>--:--<small>ülejärgmine</small>`;
           document.getElementById(t2id).querySelector(".spinner").style.display = "none";
+          delete liveTimes[t2id];
         }
 
       } catch (e) {
@@ -237,7 +255,8 @@
     }
 
     fetchAll();
-    setInterval(fetchAll, 30000);
+    setInterval(fetchAll, 30000);  // API uuendus iga 30 sek
+    setInterval(tickTimers, 1000); // Taimer uuendub iga sek
   </script>
 </body>
 </html>
