@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1a1a2e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Buss 1">
+  <title>Buss 1</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #1a1a2e;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      gap: 16px;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      color: #aaa;
+      letter-spacing: 1px;
+    }
+
+    .card {
+      background: #16213e;
+      border-radius: 16px;
+      padding: 20px 24px;
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .direction {
+      font-size: 0.82rem;
+      color: #888;
+      margin-bottom: 12px;
+    }
+
+    .times {
+      display: flex;
+      gap: 12px;
+    }
+
+    .time {
+      background: #0f3460;
+      border-radius: 10px;
+      padding: 14px 10px;
+      font-size: 1.7rem;
+      font-weight: bold;
+      color: #e94560;
+      flex: 1;
+      text-align: center;
+      line-height: 1;
+      transition: color 0.3s;
+    }
+
+    .time.loading { color: #444; }
+    .time.error { color: #ff6b35; font-size: 1rem; padding-top: 20px; }
+
+    .time small {
+      display: block;
+      font-size: 0.68rem;
+      color: #aaa;
+      font-weight: normal;
+      margin-top: 6px;
+    }
+
+    .time .minutes {
+      display: block;
+      font-size: 0.72rem;
+      color: #e9456099;
+      font-weight: normal;
+      margin-top: 2px;
+    }
+
+    .footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .updated {
+      font-size: 0.75rem;
+      color: #555;
+    }
+
+    .btn {
+      background: #0f3460;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 32px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:active { background: #1a4a80; }
+
+    .spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid #555;
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <h1>🚌 Buss 1</h1>
+
+  <div class="card">
+    <div class="direction">▶ Ülemiste → Kopli &nbsp;(peatus 12214)</div>
+    <div class="times">
+      <div class="time loading" id="s1t1"><div class="spinner" id="sp1a"></div>--:--<small>järgmine</small></div>
+      <div class="time loading" id="s1t2"><div class="spinner" id="sp1b"></div>--:--<small>ülejärgmine</small></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="direction">◀ Kopli → Ülemiste &nbsp;(peatus 18801)</div>
+    <div class="times">
+      <div class="time loading" id="s2t1"><div class="spinner" id="sp2a"></div>--:--<small>järgmine</small></div>
+      <div class="time loading" id="s2t2"><div class="spinner" id="sp2b"></div>--:--<small>ülejärgmine</small></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="updated" id="updated">Laen...</div>
+    <button class="btn" onclick="fetchAll()">🔄 Uuenda</button>
+  </div>
+
+  <script>
+    const WORKER = "https://bus.aivarmae678.workers.dev";
+
+    function nowSeconds() {
+      const d = new Date();
+      return d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
+    }
+
+    function secToTime(s) {
+      const h = Math.floor(s / 3600) % 24;
+      const m = Math.floor((s % 3600) / 60);
+      return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+    }
+
+    function minUntil(s) {
+      const diff = s - nowSeconds();
+      if (diff < 60) return "~1 min";
+      return `${Math.round(diff / 60)} min`;
+    }
+
+    function setLoading(ids) {
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        el.className = "time loading";
+        el.querySelector(".spinner").style.display = "block";
+      }
+    }
+
+    function setTime(id, labelText, sec) {
+      const el = document.getElementById(id);
+      el.querySelector(".spinner").style.display = "none";
+      el.className = "time";
+      el.innerHTML = `<div class="spinner"></div>${secToTime(sec)}<small>${labelText}</small><span class="minutes">${minUntil(sec)}</span>`;
+    }
+
+    function setError(id, msg) {
+      const el = document.getElementById(id);
+      el.querySelector && (el.querySelector(".spinner").style.display = "none");
+      el.className = "time error";
+      el.innerHTML = msg;
+    }
+
+    async function fetchStop(stopId, busNum, t1id, t2id) {
+      try {
+        const res = await fetch(`${WORKER}/?stopid=${stopId}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        const lines = text.trim().split("\n").slice(1);
+        const now = nowSeconds();
+
+        const times = lines
+          .map(l => l.split(","))
+          .filter(p => p[1] === busNum && parseInt(p[2]) > now)
+          .map(p => parseInt(p[2]))
+          .sort((a, b) => a - b)
+          .slice(0, 2);
+
+        if (times[0]) setTime(t1id, "järgmine", times[0]);
+        else {
+          document.getElementById(t1id).className = "time";
+          document.getElementById(t1id).innerHTML = `<div class="spinner"></div>--:--<small>järgmine</small>`;
+          document.getElementById(t1id).querySelector(".spinner").style.display = "none";
+        }
+
+        if (times[1]) setTime(t2id, "ülejärgmine", times[1]);
+        else {
+          document.getElementById(t2id).className = "time";
+          document.getElementById(t2id).innerHTML = `<div class="spinner"></div>--:--<small>ülejärgmine</small>`;
+          document.getElementById(t2id).querySelector(".spinner").style.display = "none";
+        }
+
+      } catch (e) {
+        setError(t1id, "!<small>viga</small>");
+        setError(t2id, "!<small>viga</small>");
+      }
+    }
+
+    async function fetchAll() {
+      document.getElementById("updated").textContent = "Laen...";
+      setLoading(["s1t1", "s1t2", "s2t1", "s2t2"]);
+      await Promise.all([
+        fetchStop("12214", "1", "s1t1", "s1t2"),
+        fetchStop("18801", "1", "s2t1", "s2t2"),
+      ]);
+      document.getElementById("updated").textContent =
+        "Uuendatud: " + new Date().toLocaleTimeString("et-EE");
+    }
+
+    fetchAll();
+    setInterval(fetchAll, 30000);
+  </script>
+</body>
+</html>
