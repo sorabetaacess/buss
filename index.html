@@ -125,7 +125,7 @@
   <h1>🚌 Buss 1</h1>
 
   <div class="card">
-    <div class="direction">▶ Ülemiste → Kopli &nbsp;(peatus 12214)</div>
+    <div class="direction">▶ Pronksi → Merivälja &nbsp;(peatus 1308)</div>
     <div class="times">
       <div class="time loading" id="s1t1"><div class="spinner" id="sp1a"></div>--:--<small>järgmine</small></div>
       <div class="time loading" id="s1t2"><div class="spinner" id="sp1b"></div>--:--<small>ülejärgmine</small></div>
@@ -133,7 +133,7 @@
   </div>
 
   <div class="card">
-    <div class="direction">◀ Kopli → Ülemiste &nbsp;(peatus 18801)</div>
+    <div class="direction">◀ Aia tee → Viru keskus &nbsp;(peatus 1566)</div>
     <div class="times">
       <div class="time loading" id="s2t1"><div class="spinner" id="sp2a"></div>--:--<small>järgmine</small></div>
       <div class="time loading" id="s2t2"><div class="spinner" id="sp2b"></div>--:--<small>ülejärgmine</small></div>
@@ -226,8 +226,8 @@
       document.getElementById("updated").textContent = "Laen...";
       setLoading(["s1t1", "s1t2", "s2t1", "s2t2"]);
       await Promise.all([
-        fetchStop("12214", "1", "s1t1", "s1t2"),
-        fetchStop("18801", "1", "s2t1", "s2t2"),
+        fetchStop("1308", "1", "s1t1", "s1t2"),
+        fetchStop("1566", "1", "s2t1", "s2t2"),
       ]);
       document.getElementById("updated").textContent =
         "Uuendatud: " + new Date().toLocaleTimeString("et-EE");
