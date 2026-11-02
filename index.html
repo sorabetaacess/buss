@@ -628,18 +628,15 @@ header { justify-content: flex-end; }
 .wx.loading .wx-temp, .wx.loading .wx-val { color: #536079; }
 .wx.error .wx-temp { color: var(--down); font-size: 34px; }
 .wx.error .wx-desc { color: var(--muted); font-weight: 600; font-size: 12px; }
+
+/* ---- bigger rectangular tabs ---- */
+.tabs { gap: 4px; padding: 4px; border-radius: 10px; }
+.tab { font-size: 13px; padding: 14px 4px; border-radius: 6px; }
 </style>
 </head>
 
 <body>
 <div class="app">
-
-<header>
-  <div class="status">
-    <span class="dot"></span>
-    LIVE
-  </div>
-</header>
 
 <nav class="tabs">
   <button class="tab active" id="tabBtnTransport" onclick="switchTab('transport')">🚏 Transport</button>
