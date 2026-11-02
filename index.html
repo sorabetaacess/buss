@@ -1,296 +1,649 @@
+
 <!DOCTYPE html>
 <html lang="et">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#1a1a2e">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Buss 1">
-  <title>Buss 1 ja Tramm 1</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#090d18">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Transport">
+<title>Tallinn Transport</title>
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #1a1a2e;
-      color: white;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      gap: 16px;
-    }
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    h1 {
-      font-size: 1.4rem;
-      color: #aaa;
-      letter-spacing: 1px;
-    }
+:root {
+  --bg: #090d18;
+  --card: #131b2b;
+  --card2: #182337;
+  --muted: #8290a8;
+  --white: #f4f7ff;
+  --bus: #ffb547;
+  --tram: #48d6c5;
+  --border: rgba(255,255,255,.07);
+}
 
-    .card {
-      background: #16213e;
-      border-radius: 16px;
-      padding: 20px 24px;
-      width: 100%;
-      max-width: 360px;
-    }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background:
+    radial-gradient(ellipse at 50% -15%, #243653 0%, transparent 65%),
+    var(--bg);
+  color: var(--white);
+  min-height: 100svh;
+  padding: 14px 13px 12px;
+  display: flex;
+  justify-content: center;
+}
 
-    .direction {
-      font-size: 0.82rem;
-      color: #888;
-      margin-bottom: 12px;
-    }
+.app {
+  width: 100%;
+  max-width: 430px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 
-    .times {
-      display: flex;
-      gap: 12px;
-    }
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 2px 7px;
+}
 
-    .time {
-      background: #0f3460;
-      border-radius: 10px;
-      padding: 14px 10px;
-      font-size: 1.7rem;
-      font-weight: bold;
-      color: #e94560;
-      flex: 1;
-      text-align: center;
-      line-height: 1;
-      transition: color 0.3s;
-    }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-    .time.loading { color: #444; }
-    .time.error { color: #ff6b35; font-size: 1rem; padding-top: 20px; }
+.logo {
+  width: 39px;
+  height: 39px;
+  border-radius: 13px;
+  background: linear-gradient(145deg,#273e5e,#18243b);
+  display: grid;
+  place-items: center;
+  font-size: 21px;
+  border: 1px solid var(--border);
+}
 
-    .time small {
-      display: block;
-      font-size: 0.68rem;
-      color: #aaa;
-      font-weight: normal;
-      margin-top: 6px;
-    }
+.brand h1 {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -.5px;
+}
 
-    .time .minutes {
-      display: block;
-      font-size: 1rem;
-      color: #e94560cc;
-      font-weight: bold;
-      margin-top: 4px;
-    }
+.brand p {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 3px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
 
-    .footer {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
+.status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #72d9a0;
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(64,205,135,.09);
+  padding: 7px 10px;
+  border-radius: 20px;
+}
 
-    .updated {
-      font-size: 0.75rem;
-      color: #555;
-    }
+.dot {
+  width: 6px;
+  height: 6px;
+  background: #56dc91;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #56dc91;
+}
 
-    .btn {
-      background: #0f3460;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      padding: 12px 32px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
+.section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 1px 3px 0;
+}
 
-    .btn:active { background: #1a4a80; }
+.section-icon {
+  font-size: 15px;
+}
 
-    .spinner {
-      display: none;
-      width: 18px;
-      height: 18px;
-      border: 2px solid #555;
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto;
-    }
+.section h2 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  font-weight: 800;
+}
 
-    @keyframes spin { to { transform: rotate(360deg); } }
-  </style>
+.section span {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.routes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.route {
+  background: linear-gradient(115deg, #182337, #111a29);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 12px 13px;
+  position: relative;
+  overflow: hidden;
+}
+
+.route::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 3px;
+  border-radius: 5px;
+  background: var(--accent);
+}
+
+.route.bus { --accent: var(--bus); }
+.route.tram { --accent: var(--tram); }
+
+.route-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 6px;
+}
+
+.route-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.line-number {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  border-radius: 7px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.destination {
+  font-size: 12px;
+  font-weight: 650;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stop {
+  color: var(--muted);
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.times {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.time {
+  background: rgba(4,9,19,.42);
+  border: 1px solid rgba(255,255,255,.035);
+  border-radius: 10px;
+  min-height: 61px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+}
+
+.time-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.clock {
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 850;
+  letter-spacing: -.6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.time-label {
+  font-size: 9px;
+  color: var(--muted);
+}
+
+.countdown {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.countdown small {
+  display: block;
+  font-size: 8px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.loading .clock {
+  color: #536079;
+}
+
+.error .clock {
+  color: #ff806e;
+  font-size: 13px;
+}
+
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 3px;
+  margin-top: auto;
+}
+
+.updated {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.refresh {
+  border: 1px solid rgba(255,255,255,.09);
+  background: #1b2a40;
+  color: white;
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+
+.refresh:active {
+  transform: scale(.96);
+  background: #263c58;
+}
+
+.refresh:disabled {
+  opacity: .6;
+}
+
+.spin {
+  display: inline-block;
+  animation: spin .8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 360px) {
+  body { padding: 9px 9px; }
+  .app { gap: 9px; }
+  .route { padding: 10px 11px; }
+  .time { min-height: 55px; padding: 7px; }
+  .clock { font-size: 16px; }
+  .destination { font-size: 11px; }
+  .route-top { margin-bottom: 8px; }
+}
+
+@media (max-height: 740px) {
+  body { padding-top: 8px; padding-bottom: 8px; }
+  .app { gap: 7px; }
+  .route { padding-top: 9px; padding-bottom: 9px; }
+  .route-top { margin-bottom: 7px; }
+  .time { min-height: 53px; }
+  header { padding-bottom: 3px; }
+}
+
+</style>
 </head>
+
 <body>
-  <h1>🚌 Buss 1</h1>
+<div class="app">
 
-  <div class="card">
-    <div class="direction">◀ Aia tee → Viru keskus &nbsp;(peatus 1566)</div>
+<header>
+  <div class="brand">
+    <div class="logo">🚏</div>
+    <div>
+      <h1>Tallinn Transport</h1>
+      <p>Live departures</p>
+    </div>
+  </div>
+  <div class="status">
+    <span class="dot"></span>
+    LIVE
+  </div>
+</header>
+
+<div class="section">
+  <div class="section-icon">🚌</div>
+  <h2>Bussid</h2>
+  <span>LIIN 1</span>
+</div>
+
+<div class="routes">
+
+  <div class="route bus">
+    <div class="route-top">
+      <div class="route-name">
+        <span class="line-number">1</span>
+        <span class="destination">Aia tee → Viru keskus</span>
+      </div>
+      <span class="stop">1566</span>
+    </div>
     <div class="times">
-      <div class="time loading" id="s1t1"><div class="spinner" id="sp1a"></div>--:--<small>järgmine</small></div>
-      <div class="time loading" id="s1t2"><div class="spinner" id="sp1b"></div>--:--<small>ülejärgmine</small></div>
+      <div class="time loading" id="s1t1">
+        <div class="time-main">
+          <span class="clock">--:--</span>
+          <span class="time-label">JÄRGMINE</span>
+        </div>
+        <span class="countdown">--</span>
+      </div>
+      <div class="time loading" id="s1t2">
+        <div class="time-main">
+          <span class="clock">--:--</span>
+          <span class="time-label">ÜLEJÄRGMINE</span>
+        </div>
+        <span class="countdown">--</span>
+      </div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="direction">▶ Hobujaama → Merivälja &nbsp;<span id="info2">(otsin...)</span></div>
+  <div class="route bus">
+    <div class="route-top">
+      <div class="route-name">
+        <span class="line-number">1</span>
+        <span class="destination">Hobujaama → Merivälja</span>
+      </div>
+      <span class="stop" id="info2">...</span>
+    </div>
     <div class="times">
-      <div class="time loading" id="s2t1"><div class="spinner" id="sp2a"></div>--:--<small>järgmine</small></div>
-      <div class="time loading" id="s2t2"><div class="spinner" id="sp2b"></div>--:--<small>ülejärgmine</small></div>
+      <div class="time loading" id="s2t1">
+        <div class="time-main">
+          <span class="clock">--:--</span>
+          <span class="time-label">JÄRGMINE</span>
+        </div>
+        <span class="countdown">--</span>
+      </div>
+      <div class="time loading" id="s2t2">
+        <div class="time-main">
+          <span class="clock">--:--</span>
+          <span class="time-label">ÜLEJÄRGMINE</span>
+        </div>
+        <span class="countdown">--</span>
+      </div>
     </div>
   </div>
 
-  <h1>🚋 Tramm 1</h1>
+</div>
 
-  <div class="card">
-    <div class="direction">🚋 Hobujaama → Kopli &nbsp;<span id="info3">(otsin...)</span></div>
+<div class="section">
+  <div class="section-icon">🚋</div>
+  <h2>Trammid</h2>
+  <span>LIIN 1</span>
+</div>
+
+<div class="routes">
+
+  <div class="route tram">
+    <div class="route-top">
+      <div class="route-name">
+        <span class="line-number">T1</span>
+        <span class="destination">Hobujaama → Kopli</span>
+      </div>
+      <span class="stop" id="info3">...</span>
+    </div>
     <div class="times">
-      <div class="time loading" id="s3t1"><div class="spinner"></div>--:--<small>järgmine</small></div>
-      <div class="time loading" id="s3t2"><div class="spinner"></div>--:--<small>ülejärgmine</small></div>
+      <div class="time loading" id="s3t1">
+        <div class="time-main">
+          <span class="clock">--:--</span>
+          <span class="time-label">JÄRGMINE</span>
+        </div>
+        <span class="countdown">--</span>
+      </div>
+      <div class="time loading" id="s3t2">
+        <div class="time-main">
+          <span class="clock">--:--</span>
+          <span class="time-label">ÜLEJÄRGMINE</span>
+        </div>
+        <span class="countdown">--</span>
+      </div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="direction">🚋 Põhja puiestee → Hobujaama &nbsp;<span id="info4">(otsin...)</span></div>
+  <div class="route tram">
+    <div class="route-top">
+      <div class="route-name">
+        <span class="line-number">T1</span>
+        <span class="destination">Põhja puiestee → Hobujaama</span>
+      </div>
+      <span class="stop" id="info4">...</span>
+    </div>
     <div class="times">
-      <div class="time loading" id="s4t1"><div class="spinner"></div>--:--<small>järgmine</small></div>
-      <div class="time loading" id="s4t2"><div class="spinner"></div>--:--<small>ülejärgmine</small></div>
+      <div class="time loading" id="s4t1">
+        <div class="time-main">
+          <span class="clock">--:--</span>
+          <span class="time-label">JÄRGMINE</span>
+        </div>
+        <span class="countdown">--</span>
+      </div>
+      <div class="time loading" id="s4t2">
+        <div class="time-main">
+          <span class="clock">--:--</span>
+          <span class="time-label">ÜLEJÄRGMINE</span>
+        </div>
+        <span class="countdown">--</span>
+      </div>
     </div>
   </div>
 
-  <div class="footer">
-    <div class="updated" id="updated">Laen...</div>
-    <button class="btn" onclick="fetchAll()">🔄 Uuenda</button>
-  </div>
+</div>
 
-  <script>
-    const WORKER = "https://bus.aivarmae678.workers.dev";
+<div class="bottom">
+  <div class="updated" id="updated">Ühendamine...</div>
+  <button class="refresh" id="refresh" onclick="fetchAll()">
+    ↻ Uuenda
+  </button>
+</div>
 
-    // Trammipeatuste ID-d (Siri ID). Põhja puiestee ID lisa siia, nt ["1234"]
-    const TRAM_HOBUJAAMA = ["3604"];
-    const TRAM_POHJA = ["1221", "110"];
+</div>
 
-    function nowSeconds() {
-      const d = new Date();
-      return d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
+<script>
+const WORKER = "https://bus.aivarmae678.workers.dev";
+
+const TRAM_HOBUJAAMA = ["3604"];
+const TRAM_POHJA = ["1221", "110"];
+
+const liveTimes = {};
+
+function nowSeconds() {
+  const d = new Date();
+  return d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
+}
+
+function secToTime(s) {
+  const h = Math.floor(s / 3600) % 24;
+  const m = Math.floor((s % 3600) / 60);
+  return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
+}
+
+function minUntil(s) {
+  const diff = s - nowSeconds();
+  if (diff <= 0) return "KOHAL";
+  if (diff < 60) return `${diff} sek`;
+  const mins = Math.floor(diff / 60);
+  const secs = diff % 60;
+  return secs === 0 ? `${mins} min` : `${mins}:${String(secs).padStart(2,"0")}`;
+}
+
+function setLoading(ids) {
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    el.className = "time loading";
+    el.querySelector(".clock").textContent = "...";
+    el.querySelector(".countdown").textContent = " ";
+  });
+}
+
+function setTime(id, label, sec) {
+  const el = document.getElementById(id);
+  el.className = "time";
+  el.querySelector(".clock").textContent = secToTime(sec);
+  el.querySelector(".time-label").textContent = label.toUpperCase();
+
+  const count = el.querySelector(".countdown");
+  count.textContent = minUntil(sec);
+
+  liveTimes[id] = sec;
+}
+
+function setError(id) {
+  const el = document.getElementById(id);
+  el.className = "time error";
+  el.querySelector(".clock").textContent = "Viga";
+  el.querySelector(".countdown").textContent = "";
+  delete liveTimes[id];
+}
+
+function tickTimers() {
+  for (const id in liveTimes) {
+    const el = document.getElementById(id);
+    const count = el?.querySelector(".countdown");
+    if (count) count.textContent = minUntil(liveTimes[id]);
+  }
+}
+
+async function fetchStop(stopIds, busNum, t1id, t2id, infoId) {
+  const ids = Array.isArray(stopIds) ? stopIds : [stopIds];
+
+  try {
+    const now = nowSeconds();
+    let times = [];
+    let usedId = null;
+
+    for (const stopId of ids) {
+      const res = await fetch(`${WORKER}/?stopid=${stopId}`);
+      if (!res.ok) continue;
+
+      const text = await res.text();
+      const rows = text.trim().split("\n").slice(1).map(l => l.split(","));
+
+      const wanted = Array.isArray(busNum) ? busNum : [busNum];
+
+      const found = rows
+        .filter(p => wanted.includes(p[1]) && parseInt(p[2]) > now)
+        .map(p => ({ t: parseInt(p[2]), line: p[1] }))
+        .sort((a,b) => a.t-b.t)
+        .slice(0,2);
+
+      if (found.length) {
+        times = found;
+        usedId = stopId;
+        break;
+      }
     }
 
-    function secToTime(s) {
-      const h = Math.floor(s / 3600) % 24;
-      const m = Math.floor((s % 3600) / 60);
-      return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-    }
+    const slots = [[t1id,"Järgmine"],[t2id,"Ülejärgmine"]];
 
-    // Salvestab bussiaegade sekundid live taimeri jaoks
-    const liveTimes = {};
-
-    function minUntil(s) {
-      const diff = s - nowSeconds();
-      if (diff <= 0) return "kohal";
-      if (diff < 60) return `${diff} sek`;
-      const mins = Math.floor(diff / 60);
-      const secs = diff % 60;
-      return `${mins}:${String(secs).padStart(2, '0')} min`;
-    }
-
-    function setLoading(ids) {
-      for (const id of ids) {
+    slots.forEach(([id,label],i) => {
+      if (times[i]) {
+        const displayLabel = Array.isArray(busNum)
+          ? `${times[i].line} · ${label}`
+          : label;
+        setTime(id, displayLabel, times[i].t);
+      } else {
         const el = document.getElementById(id);
-        el.className = "time loading";
-        el.querySelector(".spinner").style.display = "block";
+        el.className = "time";
+        el.querySelector(".clock").textContent = "--:--";
+        el.querySelector(".countdown").textContent = "Pole";
+        delete liveTimes[id];
       }
+    });
+
+    if (infoId) {
+      document.getElementById(infoId).textContent =
+        usedId ? `Peatus ${usedId}` : "Andmed puuduvad";
     }
 
-    function setTime(id, labelText, sec) {
-      const el = document.getElementById(id);
-      el.querySelector(".spinner").style.display = "none";
-      el.className = "time";
-      el.innerHTML = `<div class="spinner"></div>${secToTime(sec)}<small>${labelText}</small><span class="minutes" data-sec="${sec}">${minUntil(sec)}</span>`;
-      liveTimes[id] = sec;
-    }
+  } catch(e) {
+    setError(t1id);
+    setError(t2id);
+    if (infoId) document.getElementById(infoId).textContent = "Viga";
+  }
+}
 
-    function setError(id, msg) {
-      const el = document.getElementById(id);
-      el.querySelector && (el.querySelector(".spinner").style.display = "none");
-      el.className = "time error";
-      el.innerHTML = msg;
-      delete liveTimes[id];
-    }
+let refreshing = false;
 
-    // Uuendab iga sekund ainult taimerit (ilma API päringuta)
-    function tickTimers() {
-      for (const id in liveTimes) {
-        const el = document.getElementById(id);
-        const span = el && el.querySelector(".minutes[data-sec]");
-        if (!span) continue;
-        const sec = parseInt(span.dataset.sec);
-        span.textContent = minUntil(sec);
-      }
-    }
+async function fetchAll() {
+  if (refreshing) return;
+  refreshing = true;
 
-    async function fetchStop(stopIds, busNum, t1id, t2id, infoId) {
-      const ids = Array.isArray(stopIds) ? stopIds : [stopIds];
-      try {
-        const now = nowSeconds();
-        let times = [];
-        let usedId = null;
-        let debug = [];
-        if (ids.length === 0) debug.push("peatuse ID puudub");
+  const button = document.getElementById("refresh");
+  button.disabled = true;
+  button.innerHTML = '<span class="spin">↻</span> Uuendan...';
 
-        for (const stopId of ids) {
-          const res = await fetch(`${WORKER}/?stopid=${stopId}`);
-          if (!res.ok) { debug.push(`${stopId}: HTTP ${res.status}`); continue; }
-          const text = await res.text();
-          const rows = text.trim().split("\n").slice(1).map(l => l.split(","));
-          const lines = [...new Set(rows.map(p => p[1]))].join(" ");
-          debug.push(`${stopId}: ${lines || "tühi"}`);
-          const wanted = Array.isArray(busNum) ? busNum : [busNum];
-          const found = rows
-            .filter(p => wanted.includes(p[1]) && parseInt(p[2]) > now)
-            .map(p => ({ t: parseInt(p[2]), line: p[1] }))
-            .sort((a, b) => a.t - b.t)
-            .slice(0, 2);
-          if (found.length) { times = found; usedId = stopId; break; }
-        }
+  document.getElementById("updated").textContent = "Andmete laadimine...";
 
-        const slots = [[t1id, "järgmine"], [t2id, "ülejärgmine"]];
-        slots.forEach(([id, label], i) => {
-          if (times[i]) setTime(id, Array.isArray(busNum) ? `${times[i].line} · ${label}` : label, times[i].t);
-          else {
-            const el = document.getElementById(id);
-            el.className = "time";
-            el.innerHTML = `<div class="spinner" style="display:none"></div>--:--<small>${label}</small>`;
-            delete liveTimes[id];
-          }
-        });
+  setLoading([
+    "s1t1","s1t2","s2t1","s2t2",
+    "s3t1","s3t2","s4t1","s4t2"
+  ]);
 
-        if (infoId) {
-          document.getElementById(infoId).textContent = usedId
-            ? `(peatus ${usedId})`
-            : `(ei leitud: ${debug.join(" | ")})`;
-        }
-      } catch (e) {
-        setError(t1id, "!<small>viga</small>");
-        setError(t2id, "!<small>viga</small>");
-      }
-    }
+  try {
+    await Promise.all([
+      fetchStop("1566","1","s1t1","s1t2"),
+      fetchStop(["3402"],"1","s2t1","s2t2","info2"),
+      fetchStop(TRAM_HOBUJAAMA,"T1","s3t1","s3t2","info3"),
+      fetchStop(TRAM_POHJA,["T1","T2","T6"],"s4t1","s4t2","info4")
+    ]);
 
-    async function fetchAll() {
-      document.getElementById("updated").textContent = "Laen...";
-      setLoading(["s1t1", "s1t2", "s2t1", "s2t2", "s3t1", "s3t2", "s4t1", "s4t2"]);
-      await Promise.all([
-        fetchStop("1566", "1", "s1t1", "s1t2"),
-        fetchStop(["3402"], "1", "s2t1", "s2t2", "info2"),
-        fetchStop(TRAM_HOBUJAAMA, "T1", "s3t1", "s3t2", "info3"),
-        fetchStop(TRAM_POHJA, ["T1", "T2", "T6"], "s4t1", "s4t2", "info4"),
-      ]);
-      document.getElementById("updated").textContent =
-        "Uuendatud: " + new Date().toLocaleTimeString("et-EE");
-    }
+    document.getElementById("updated").textContent =
+      "Uuendatud " + new Date().toLocaleTimeString("et-EE", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
 
-    fetchAll();
-    setInterval(fetchAll, 30000);  // API uuendus iga 30 sek
-    setInterval(tickTimers, 1000); // Taimer uuendub iga sek
-  </script>
+  } finally {
+    refreshing = false;
+    button.disabled = false;
+    button.innerHTML = "↻ Uuenda";
+  }
+}
+
+fetchAll();
+setInterval(fetchAll,30000);
+setInterval(tickTimers,1000);
+</script>
+
 </body>
 </html>
