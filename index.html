@@ -25,6 +25,7 @@
   --white: #f4f7ff;
   --bus: #ffb547;
   --tram: #48d6c5;
+  --tram-back: #b794ff;
   --border: rgba(255,255,255,.07);
 }
 
@@ -158,6 +159,7 @@ header {
 
 .route.bus { --accent: var(--bus); }
 .route.tram { --accent: var(--tram); }
+.route.tram.back { --accent: var(--tram-back); }
 
 .route-top {
   display: flex;
@@ -324,6 +326,269 @@ header {
   header { padding-bottom: 3px; }
 }
 
+
+/* ---- kompaktne paigutus: kõik mahub ühele ekraanile ---- */
+body { padding: max(8px, env(safe-area-inset-top)) 10px max(8px, env(safe-area-inset-bottom)); min-height: 100dvh; }
+.app { gap: 6px; }
+header { padding: 0 2px 2px; }
+.logo { width: 32px; height: 32px; font-size: 17px; border-radius: 10px; }
+.brand h1 { font-size: 15px; }
+.brand p { font-size: 9px; margin-top: 2px; }
+.status { padding: 5px 9px; }
+.routes { gap: 6px; }
+.route { padding: 7px 11px 7px 12px; border-radius: 13px; }
+.route::before { top: 9px; bottom: 9px; }
+.route-top { margin-bottom: 5px; }
+.line-number { padding: 3px 7px; font-size: 11px; }
+.destination { font-size: 12px; }
+.times { gap: 6px; }
+.time { min-height: 42px; padding: 5px 9px; border-radius: 9px; }
+.clock { font-size: 17px; }
+.time-main { gap: 3px; }
+.countdown { font-size: 12px; }
+.bottom { padding: 0 3px; }
+.refresh { padding: 7px 12px; }
+.route { padding: 6px 11px 6px 12px; }
+.route-top { margin-bottom: 4px; }
+.time { min-height: 38px; padding: 4px 9px; }
+.clock { font-size: 16px; }
+.line-number { padding: 2px 7px; }
+/* ---- sakid + krüpto ---- */
+:root { --up: #56dc91; --down: #ff806e; }
+
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  padding: 3px;
+  background: rgba(4,9,19,.5);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.tab {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  padding: 7px 8px;
+  border-radius: 9px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background .15s, color .15s;
+}
+
+.tab.active {
+  background: #1f3150;
+  color: var(--white);
+  box-shadow: 0 1px 0 rgba(255,255,255,.06) inset;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.panel[hidden] { display: none; }
+
+.coins {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.coin {
+  --accent: var(--muted);
+  background: linear-gradient(115deg, #182337, #111a29);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 11px 12px 11px 14px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.coin::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 11px;
+  bottom: 11px;
+  width: 3px;
+  border-radius: 5px;
+  background: var(--accent);
+}
+
+.coin.btc { --accent: #f7931a; }
+.coin.eth { --accent: #8c9eff; }
+.coin.bnb { --accent: #f3ba2f; }
+
+.coin-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  flex-shrink: 0;
+}
+
+.coin-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+
+.coin-name { font-size: 13px; font-weight: 750; }
+
+.coin-ticker {
+  font-size: 9px;
+  letter-spacing: 1.4px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.coin-eur {
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.coin-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.price-usd {
+  font-size: 18px;
+  font-weight: 850;
+  letter-spacing: -.5px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.change {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-variant-numeric: tabular-nums;
+  background: rgba(130,144,168,.12);
+  color: var(--muted);
+}
+
+.change.up { color: var(--up); background: rgba(86,220,145,.11); }
+.change.down { color: var(--down); background: rgba(255,128,110,.11); }
+
+.coin.loading .price-usd,
+.coin.loading .coin-eur { color: #536079; }
+
+.coin.error .price-usd { color: var(--down); font-size: 14px; }
+
+.source {
+  font-size: 9px;
+  color: var(--muted);
+  text-align: center;
+  letter-spacing: .4px;
+}
+
+@media (max-width: 360px) {
+  .price-usd { font-size: 16px; }
+}
+/* ---- krüpto: kogusumma + hoiused ---- */
+.total {
+  background: linear-gradient(135deg, #1f3a5f, #13203a);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 14px;
+  padding: 11px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.total-label {
+  font-size: 9px;
+  letter-spacing: 1.6px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.total-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.total-usd {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -.8px;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.total-eur {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.total.loading .total-usd,
+.total.loading .total-eur { color: #536079; }
+
+.total.error .total-usd { color: var(--down); font-size: 18px; }
+
+.coin-unit {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.coin-unit .change {
+  padding: 2px 6px;
+  font-size: 10px;
+}
+
+.coin-hold {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--white);
+  opacity: .85;
+  font-variant-numeric: tabular-nums;
+}
+
+.coin-price { gap: 4px; }
+
+@media (max-width: 360px) {
+  .total-usd { font-size: 22px; }
+}
 </style>
 </head>
 
@@ -344,11 +609,12 @@ header {
   </div>
 </header>
 
-<div class="section">
-  <div class="section-icon">🚌</div>
-  <h2>Bussid</h2>
-  <span>LIIN 1</span>
-</div>
+<nav class="tabs">
+  <button class="tab active" id="tabBtnTransport" onclick="switchTab('transport')">🚏 Transport</button>
+  <button class="tab" id="tabBtnCrypto" onclick="switchTab('crypto')">₿ Krüpto</button>
+</nav>
+
+<div class="panel" id="panelTransport">
 
 <div class="routes">
 
@@ -404,21 +670,12 @@ header {
     </div>
   </div>
 
-</div>
-
-<div class="section">
-  <div class="section-icon">🚋</div>
-  <h2>Trammid</h2>
-  <span>LIIN 1</span>
-</div>
-
-<div class="routes">
 
   <div class="route tram">
     <div class="route-top">
       <div class="route-name">
         <span class="line-number">T1</span>
-        <span class="destination">Hobujaama → Kopli</span>
+        <span class="destination">Hobujaama → Põhja puiestee</span>
       </div>
       <span class="stop" id="info3">...</span>
     </div>
@@ -441,6 +698,32 @@ header {
   </div>
 
   <div class="route tram">
+    <div class="route-top">
+      <div class="route-name">
+        <span class="line-number">T6</span>
+        <span class="destination">Hobujaama → Põhja puiestee</span>
+      </div>
+      <span class="stop" id="info5">...</span>
+    </div>
+    <div class="times">
+      <div class="time loading" id="s5t1">
+        <div class="time-main">
+          <span class="clock">--:--</span>
+          <span class="time-label">JÄRGMINE</span>
+        </div>
+        <span class="countdown">--</span>
+      </div>
+      <div class="time loading" id="s5t2">
+        <div class="time-main">
+          <span class="clock">--:--</span>
+          <span class="time-label">ÜLEJÄRGMINE</span>
+        </div>
+        <span class="countdown">--</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="route tram back">
     <div class="route-top">
       <div class="route-name">
         <span class="line-number">T1</span>
@@ -466,6 +749,32 @@ header {
     </div>
   </div>
 
+  <div class="route tram back">
+    <div class="route-top">
+      <div class="route-name">
+        <span class="line-number">T6</span>
+        <span class="destination">Põhja puiestee → Hobujaama</span>
+      </div>
+      <span class="stop" id="info6">...</span>
+    </div>
+    <div class="times">
+      <div class="time loading" id="s6t1">
+        <div class="time-main">
+          <span class="clock">--:--</span>
+          <span class="time-label">JÄRGMINE</span>
+        </div>
+        <span class="countdown">--</span>
+      </div>
+      <div class="time loading" id="s6t2">
+        <div class="time-main">
+          <span class="clock">--:--</span>
+          <span class="time-label">ÜLEJÄRGMINE</span>
+        </div>
+        <span class="countdown">--</span>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div class="bottom">
@@ -473,6 +782,73 @@ header {
   <button class="refresh" id="refresh" onclick="fetchAll()">
     ↻ Uuenda
   </button>
+</div>
+
+</div>
+
+<div class="panel" id="panelCrypto" hidden>
+
+<div class="total loading" id="total">
+  <div class="total-label">KOGUSUMMA</div>
+  <div class="total-main">
+    <div class="total-usd" id="totalUsd">$ --</div>
+    <span class="change" id="totalChange">--</span>
+  </div>
+  <div class="total-eur" id="totalEur">€ --</div>
+</div>
+
+<div class="coins">
+
+  <div class="coin btc loading" id="coin-btc">
+    <div class="coin-icon">₿</div>
+    <div class="coin-info">
+      <span class="coin-name">Bitcoin</span>
+      <span class="coin-unit"><span class="unit-price">$ --</span><span class="change">--</span></span>
+      <span class="coin-hold"></span>
+    </div>
+    <div class="coin-price">
+      <span class="price-usd">$ --</span>
+      <span class="coin-eur">€ --</span>
+    </div>
+  </div>
+
+  <div class="coin eth loading" id="coin-eth">
+    <div class="coin-icon">Ξ</div>
+    <div class="coin-info">
+      <span class="coin-name">Ethereum</span>
+      <span class="coin-unit"><span class="unit-price">$ --</span><span class="change">--</span></span>
+      <span class="coin-hold"></span>
+    </div>
+    <div class="coin-price">
+      <span class="price-usd">$ --</span>
+      <span class="coin-eur">€ --</span>
+    </div>
+  </div>
+
+  <div class="coin bnb loading" id="coin-bnb">
+    <div class="coin-icon">◆</div>
+    <div class="coin-info">
+      <span class="coin-name">BNB</span>
+      <span class="coin-unit"><span class="unit-price">$ --</span><span class="change">--</span></span>
+      <span class="coin-hold"></span>
+    </div>
+    <div class="coin-price">
+      <span class="price-usd">$ --</span>
+      <span class="coin-eur">€ --</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="source" id="cSource">24h muutus · uueneb iga 30 sekundi järel</div>
+
+<div class="bottom">
+  <div class="updated" id="cUpdated">Ühendamine...</div>
+  <button class="refresh" id="cRefresh" onclick="fetchCrypto()">
+    ↻ Uuenda
+  </button>
+</div>
+
 </div>
 
 </div>
@@ -615,7 +991,7 @@ async function fetchAll() {
 
   setLoading([
     "s1t1","s1t2","s2t1","s2t2",
-    "s3t1","s3t2","s4t1","s4t2"
+    "s3t1","s3t2","s4t1","s4t2","s5t1","s5t2","s6t1","s6t2"
   ]);
 
   try {
@@ -623,7 +999,9 @@ async function fetchAll() {
       fetchStop("1566","1","s1t1","s1t2"),
       fetchStop(["3402"],"1","s2t1","s2t2","info2"),
       fetchStop(TRAM_HOBUJAAMA,"T1","s3t1","s3t2","info3"),
-      fetchStop(TRAM_POHJA,["T1","T2","T6"],"s4t1","s4t2","info4")
+      fetchStop(TRAM_HOBUJAAMA,"T6","s5t1","s5t2","info5"),
+      fetchStop(TRAM_POHJA,"T1","s4t1","s4t2","info4"),
+      fetchStop(TRAM_POHJA,"T6","s6t1","s6t2","info6")
     ]);
 
     document.getElementById("updated").textContent =
@@ -640,8 +1018,222 @@ async function fetchAll() {
   }
 }
 
-fetchAll();
-setInterval(fetchAll,30000);
+/* ================= SAKID ================= */
+
+let activeTab = "transport";
+
+function applyTab(name) {
+  activeTab = name;
+  document.getElementById("panelTransport").hidden = name !== "transport";
+  document.getElementById("panelCrypto").hidden = name !== "crypto";
+  document.getElementById("tabBtnTransport").classList.toggle("active", name === "transport");
+  document.getElementById("tabBtnCrypto").classList.toggle("active", name === "crypto");
+}
+
+function switchTab(name) {
+  applyTab(name);
+  try { localStorage.setItem("activeTab", name); } catch (e) {}
+  if (name === "crypto") fetchCrypto();
+  else fetchAll();
+}
+
+/* ================= KRÜPTO ================= */
+
+// Muuda siin oma koguseid, kui need muutuvad
+const COINS = [
+  { key: "btc", gecko: "bitcoin",     binance: "BTC", amount: 0.05593 },
+  { key: "eth", gecko: "ethereum",    binance: "ETH", amount: 1.51386 },
+  { key: "bnb", gecko: "binancecoin", binance: "BNB", amount: 1.50569 }
+];
+
+async function fromCoinGecko() {
+  const ids = COINS.map(c => c.gecko).join(",");
+  const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd,eur&include_24hr_change=true`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("CoinGecko " + res.status);
+  const data = await res.json();
+
+  const out = {};
+  COINS.forEach(c => {
+    const d = data[c.gecko];
+    if (!d || typeof d.usd !== "number") throw new Error("CoinGecko: andmed puuduvad");
+    out[c.key] = { usd: d.usd, eur: d.eur, change: d.usd_24h_change };
+  });
+  return { prices: out, source: "CoinGecko" };
+}
+
+async function fromBinance() {
+  const symbols = [];
+  COINS.forEach(c => {
+    symbols.push(c.binance + "USDT");
+    symbols.push(c.binance + "EUR");
+  });
+
+  const url = "https://api.binance.com/api/v3/ticker/24hr?symbols=" +
+    encodeURIComponent(JSON.stringify(symbols));
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Binance " + res.status);
+  const rows = await res.json();
+
+  const bySymbol = {};
+  rows.forEach(r => { bySymbol[r.symbol] = r; });
+
+  const out = {};
+  COINS.forEach(c => {
+    const u = bySymbol[c.binance + "USDT"];
+    const e = bySymbol[c.binance + "EUR"];
+    if (!u) throw new Error("Binance: andmed puuduvad");
+    out[c.key] = {
+      usd: parseFloat(u.lastPrice),
+      eur: e ? parseFloat(e.lastPrice) : null,
+      change: parseFloat(u.priceChangePercent)
+    };
+  });
+  return { prices: out, source: "Binance" };
+}
+
+function fmtNum(n, digits = 2) {
+  return n.toLocaleString("et-EE", {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits
+  });
+}
+
+function fmtAmount(n) {
+  return n.toLocaleString("et-EE", { maximumFractionDigits: 5 });
+}
+
+function setChange(el, change) {
+  if (typeof change === "number" && !isNaN(change)) {
+    const up = change >= 0;
+    el.textContent = (up ? "▲ +" : "▼ ") + fmtNum(change) + "%";
+    el.className = el.className.replace(/\b(up|down)\b/g, "").trim() + " " + (up ? "up" : "down");
+  } else {
+    el.textContent = "--";
+    el.className = el.className.replace(/\b(up|down)\b/g, "").trim();
+  }
+}
+
+function renderHoldings() {
+  COINS.forEach(c => {
+    const el = document.getElementById("coin-" + c.key);
+    el.querySelector(".coin-hold").textContent = fmtAmount(c.amount) + " " + c.binance;
+  });
+}
+
+function renderCoin(c, d) {
+  const el = document.getElementById("coin-" + c.key);
+  el.classList.remove("loading", "error");
+
+  el.querySelector(".unit-price").textContent = "$ " + fmtNum(d.usd);
+  setChange(el.querySelector(".change"), d.change);
+
+  el.querySelector(".price-usd").textContent = "$ " + fmtNum(c.amount * d.usd);
+  el.querySelector(".coin-eur").textContent =
+    d.eur != null ? "€ " + fmtNum(c.amount * d.eur) : "€ --";
+}
+
+function renderTotal(prices) {
+  let usd = 0, eur = 0, prevUsd = 0;
+  let eurOk = true, changeOk = true;
+
+  COINS.forEach(c => {
+    const d = prices[c.key];
+    const val = c.amount * d.usd;
+    usd += val;
+
+    if (d.eur != null) eur += c.amount * d.eur;
+    else eurOk = false;
+
+    if (typeof d.change === "number" && !isNaN(d.change)) prevUsd += val / (1 + d.change / 100);
+    else changeOk = false;
+  });
+
+  const box = document.getElementById("total");
+  box.classList.remove("loading", "error");
+
+  document.getElementById("totalUsd").textContent = "$ " + fmtNum(usd);
+  document.getElementById("totalEur").textContent = eurOk ? "€ " + fmtNum(eur) : "€ --";
+  setChange(
+    document.getElementById("totalChange"),
+    changeOk && prevUsd > 0 ? (usd / prevUsd - 1) * 100 : null
+  );
+}
+
+function renderCryptoError() {
+  COINS.forEach(c => {
+    const el = document.getElementById("coin-" + c.key);
+    el.classList.remove("loading");
+    el.classList.add("error");
+    el.querySelector(".price-usd").textContent = "Viga";
+    el.querySelector(".coin-eur").textContent = "€ --";
+    el.querySelector(".unit-price").textContent = "$ --";
+    setChange(el.querySelector(".change"), null);
+  });
+
+  const box = document.getElementById("total");
+  box.classList.remove("loading");
+  box.classList.add("error");
+  document.getElementById("totalUsd").textContent = "Viga";
+  document.getElementById("totalEur").textContent = "€ --";
+  setChange(document.getElementById("totalChange"), null);
+}
+
+let cryptoRefreshing = false;
+
+async function fetchCrypto() {
+  if (cryptoRefreshing) return;
+  cryptoRefreshing = true;
+
+  const button = document.getElementById("cRefresh");
+  const updated = document.getElementById("cUpdated");
+  button.disabled = true;
+  button.innerHTML = '<span class="spin">↻</span> Uuendan...';
+  updated.textContent = "Andmete laadimine...";
+
+  try {
+    let result;
+    try {
+      result = await fromCoinGecko();
+    } catch (e) {
+      result = await fromBinance();
+    }
+
+    COINS.forEach(c => renderCoin(c, result.prices[c.key]));
+    renderTotal(result.prices);
+
+    document.getElementById("cSource").textContent =
+      `Allikas: ${result.source} · 24h muutus · uueneb iga 30 sekundi järel`;
+
+    updated.textContent =
+      "Uuendatud " + new Date().toLocaleTimeString("et-EE", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+
+  } catch (e) {
+    renderCryptoError();
+    updated.textContent = "Ühenduse viga";
+  } finally {
+    cryptoRefreshing = false;
+    button.disabled = false;
+    button.innerHTML = "↻ Uuenda";
+  }
+}
+
+/* ================= START ================= */
+
+let savedTab = "transport";
+try { savedTab = localStorage.getItem("activeTab") || "transport"; } catch (e) {}
+applyTab(savedTab === "crypto" ? "crypto" : "transport");
+renderHoldings();
+
+if (activeTab === "crypto") fetchCrypto();
+else fetchAll();
+
+setInterval(() => { if (activeTab === "transport") fetchAll(); }, 30000);
+setInterval(() => { if (activeTab === "crypto") fetchCrypto(); }, 30000);
 setInterval(tickTimers,1000);
 </script>
 
