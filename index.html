@@ -655,6 +655,21 @@ header { justify-content: flex-end; }
 .fc-rain.dry { color: var(--muted); font-weight: 600; }
 .fc-temp { font-size: 13px; font-weight: 850; white-space: nowrap; font-variant-numeric: tabular-nums; text-align: right; min-width: 56px; }
 .fc-temp span { color: var(--muted); font-weight: 700; }
+
+/* ---- trammid: kompaktsem, et kõik 6 rida mahuks ekraanile ---- */
+.sec-tram { margin-top: 4px; }
+.route.tram { padding: 4px 10px 4px 11px; border-radius: 11px; }
+.route.tram::before { top: 7px; bottom: 7px; }
+.route.tram .route-top { margin-bottom: 3px; }
+.route.tram .line-number { padding: 1px 6px; font-size: 10px; border-radius: 6px; }
+.route.tram .destination { font-size: 11px; }
+.route.tram .stop { font-size: 8px; }
+.route.tram .times { gap: 5px; }
+.route.tram .time { min-height: 29px; padding: 2px 8px; border-radius: 8px; }
+.route.tram .time-main { gap: 2px; }
+.route.tram .clock { font-size: 14px; }
+.route.tram .time-label { font-size: 7px; letter-spacing: .3px; }
+.route.tram .countdown { font-size: 11px; }
 </style>
 </head>
 
