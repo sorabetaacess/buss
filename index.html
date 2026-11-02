@@ -589,6 +589,45 @@ header { padding: 0 2px 2px; }
 @media (max-width: 360px) {
   .total-usd { font-size: 22px; }
 }
+.section .section-icon { margin-left: 0; }
+.sec-tram { margin-top: 8px; }
+
+/* ---- header + 3 tabs + ilm ---- */
+header { justify-content: flex-end; }
+.tabs { grid-template-columns: repeat(3, 1fr); }
+.tab { padding-left: 4px; padding-right: 4px; }
+
+.wx {
+  background: linear-gradient(135deg, #1f3a5f, #13203a);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 14px;
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.wx-top { display: flex; align-items: center; justify-content: space-between; }
+.wx-city { font-size: 12px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; }
+.wx-range { font-size: 11px; color: var(--muted); font-weight: 700; }
+.wx-main { display: flex; align-items: center; justify-content: space-between; }
+.wx-temp { font-size: 58px; font-weight: 900; line-height: 1; letter-spacing: -1px; }
+.wx-icon { font-size: 54px; line-height: 1; }
+.wx-desc { font-size: 14px; font-weight: 700; color: var(--white); }
+.wx-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 4px; }
+.wx-stat {
+  background: rgba(4,9,19,.42);
+  border: 1px solid rgba(255,255,255,.035);
+  border-radius: 9px;
+  padding: 7px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.wx-label { font-size: 8px; font-weight: 800; letter-spacing: .8px; color: var(--muted); }
+.wx-val { font-size: 14px; font-weight: 800; }
+.wx.loading .wx-temp, .wx.loading .wx-val { color: #536079; }
+.wx.error .wx-temp { color: var(--down); font-size: 34px; }
+.wx.error .wx-desc { color: var(--muted); font-weight: 600; font-size: 12px; }
 </style>
 </head>
 
@@ -596,13 +635,6 @@ header { padding: 0 2px 2px; }
 <div class="app">
 
 <header>
-  <div class="brand">
-    <div class="logo">🚏</div>
-    <div>
-      <h1>Tallinn Transport</h1>
-      <p>Live departures</p>
-    </div>
-  </div>
   <div class="status">
     <span class="dot"></span>
     LIVE
@@ -611,6 +643,7 @@ header { padding: 0 2px 2px; }
 
 <nav class="tabs">
   <button class="tab active" id="tabBtnTransport" onclick="switchTab('transport')">🚏 Transport</button>
+  <button class="tab" id="tabBtnWeather" onclick="switchTab('weather')">🌤 Ilm</button>
   <button class="tab" id="tabBtnCrypto" onclick="switchTab('crypto')">₿ Krüpto</button>
 </nav>
 
@@ -618,11 +651,13 @@ header { padding: 0 2px 2px; }
 
 <div class="routes">
 
+  <div class="section"><span class="section-icon">🚌</span><h2>Bussid</h2><span>Liin 1</span></div>
+
   <div class="route bus">
     <div class="route-top">
       <div class="route-name">
         <span class="line-number">1</span>
-        <span class="destination">Aia tee → Viru keskus</span>
+        <span class="destination">Aia tee → Hobujaama</span>
       </div>
       <span class="stop">1566</span>
     </div>
@@ -670,6 +705,8 @@ header { padding: 0 2px 2px; }
     </div>
   </div>
 
+
+  <div class="section sec-tram"><span class="section-icon">🚋</span><h2>Trammid</h2><span>Liin T1 · T6</span></div>
 
   <div class="route tram">
     <div class="route-top">
@@ -780,6 +817,34 @@ header { padding: 0 2px 2px; }
 <div class="bottom">
   <div class="updated" id="updated">Ühendamine...</div>
   <button class="refresh" id="refresh" onclick="fetchAll()">
+    ↻ Uuenda
+  </button>
+</div>
+
+</div>
+
+<div class="panel" id="panelWeather" hidden>
+
+<div class="wx loading" id="wx">
+  <div class="wx-top">
+    <span class="wx-city">Tallinn</span>
+    <span class="wx-range" id="wxRange">↓ -- · ↑ --</span>
+  </div>
+  <div class="wx-main">
+    <div class="wx-temp" id="wxTemp">--°</div>
+    <div class="wx-icon" id="wxIcon">⏳</div>
+  </div>
+  <div class="wx-desc" id="wxDesc">Laadimine...</div>
+  <div class="wx-stats">
+    <div class="wx-stat"><span class="wx-label">TUNNETUSLIK</span><span class="wx-val" id="wxFeels">--</span></div>
+    <div class="wx-stat"><span class="wx-label">TUUL</span><span class="wx-val" id="wxWind">--</span></div>
+    <div class="wx-stat"><span class="wx-label">NIISKUS</span><span class="wx-val" id="wxHum">--</span></div>
+  </div>
+</div>
+
+<div class="bottom">
+  <div class="updated" id="wUpdated">Ühendamine...</div>
+  <button class="refresh" id="wRefresh" onclick="fetchWeather()">
     ↻ Uuenda
   </button>
 </div>
@@ -1025,8 +1090,10 @@ let activeTab = "transport";
 function applyTab(name) {
   activeTab = name;
   document.getElementById("panelTransport").hidden = name !== "transport";
+  document.getElementById("panelWeather").hidden = name !== "weather";
   document.getElementById("panelCrypto").hidden = name !== "crypto";
   document.getElementById("tabBtnTransport").classList.toggle("active", name === "transport");
+  document.getElementById("tabBtnWeather").classList.toggle("active", name === "weather");
   document.getElementById("tabBtnCrypto").classList.toggle("active", name === "crypto");
 }
 
@@ -1034,7 +1101,83 @@ function switchTab(name) {
   applyTab(name);
   try { localStorage.setItem("activeTab", name); } catch (e) {}
   if (name === "crypto") fetchCrypto();
+  else if (name === "weather") fetchWeather();
   else fetchAll();
+}
+
+/* ================= ILM ================= */
+
+const WX_CODES = {
+  0:["Selge","☀️"], 1:["Peaaegu selge","🌤️"], 2:["Poolpilvine","⛅"], 3:["Pilvine","☁️"],
+  45:["Udu","🌫️"], 48:["Härmatisudu","🌫️"],
+  51:["Kerge uduvihm","🌦️"], 53:["Uduvihm","🌦️"], 55:["Tihe uduvihm","🌧️"],
+  56:["Jäine uduvihm","🌧️"], 57:["Jäine uduvihm","🌧️"],
+  61:["Kerge vihm","🌦️"], 63:["Vihm","🌧️"], 65:["Tugev vihm","🌧️"],
+  66:["Jäävihm","🌧️"], 67:["Tugev jäävihm","🌧️"],
+  71:["Kerge lumi","🌨️"], 73:["Lumi","🌨️"], 75:["Tugev lumi","❄️"], 77:["Lumeterad","❄️"],
+  80:["Hoovihm","🌦️"], 81:["Hoovihm","🌧️"], 82:["Tugev hoovihm","⛈️"],
+  85:["Lumehoog","🌨️"], 86:["Tugev lumehoog","❄️"],
+  95:["Äike","⛈️"], 96:["Äike ja rahe","⛈️"], 99:["Tugev äike ja rahe","⛈️"]
+};
+
+function fmtTemp(t) {
+  const r = Math.round(t);
+  return (Object.is(r, -0) ? 0 : r) + "°";
+}
+
+let weatherRefreshing = false;
+
+async function fetchWeather() {
+  if (weatherRefreshing) return;
+  weatherRefreshing = true;
+
+  const button = document.getElementById("wRefresh");
+  const updated = document.getElementById("wUpdated");
+  const box = document.getElementById("wx");
+  button.disabled = true;
+  button.innerHTML = '<span class="spin">↻</span> Uuendan...';
+  updated.textContent = "Andmete laadimine...";
+
+  try {
+    const url = "https://api.open-meteo.com/v1/forecast?latitude=59.437&longitude=24.7536" +
+      "&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,is_day" +
+      "&daily=temperature_2m_max,temperature_2m_min&wind_speed_unit=ms&timezone=Europe%2FTallinn&forecast_days=1";
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Open-Meteo " + res.status);
+    const d = await res.json();
+    const c = d.current;
+
+    let [desc, icon] = WX_CODES[c.weather_code] || ["--", "🌡️"];
+    if (!c.is_day && (c.weather_code === 0 || c.weather_code === 1)) icon = "🌙";
+
+    document.getElementById("wxTemp").textContent = fmtTemp(c.temperature_2m) + "C";
+    document.getElementById("wxIcon").textContent = icon;
+    document.getElementById("wxDesc").textContent = desc;
+    document.getElementById("wxFeels").textContent = fmtTemp(c.apparent_temperature) + "C";
+    document.getElementById("wxWind").textContent = fmtNum(c.wind_speed_10m, 1) + " m/s";
+    document.getElementById("wxHum").textContent = Math.round(c.relative_humidity_2m) + "%";
+    document.getElementById("wxRange").textContent =
+      "↓ " + fmtTemp(d.daily.temperature_2m_min[0]) + " · ↑ " + fmtTemp(d.daily.temperature_2m_max[0]);
+
+    box.classList.remove("loading", "error");
+
+    updated.textContent =
+      "Uuendatud " + new Date().toLocaleTimeString("et-EE", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+  } catch (e) {
+    box.classList.remove("loading");
+    box.classList.add("error");
+    document.getElementById("wxTemp").textContent = "Viga";
+    document.getElementById("wxDesc").textContent = "Ilmaandmeid ei õnnestunud laadida";
+    updated.textContent = "Ühenduse viga";
+  } finally {
+    weatherRefreshing = false;
+    button.disabled = false;
+    button.innerHTML = "↻ Uuenda";
+  }
 }
 
 /* ================= KRÜPTO ================= */
@@ -1226,13 +1369,15 @@ async function fetchCrypto() {
 
 let savedTab = "transport";
 try { savedTab = localStorage.getItem("activeTab") || "transport"; } catch (e) {}
-applyTab(savedTab === "crypto" ? "crypto" : "transport");
+applyTab(savedTab === "crypto" || savedTab === "weather" ? savedTab : "transport");
 renderHoldings();
 
 if (activeTab === "crypto") fetchCrypto();
+else if (activeTab === "weather") fetchWeather();
 else fetchAll();
 
 setInterval(() => { if (activeTab === "transport") fetchAll(); }, 30000);
+setInterval(() => { if (activeTab === "weather") fetchWeather(); }, 300000);
 setInterval(() => { if (activeTab === "crypto") fetchCrypto(); }, 30000);
 setInterval(tickTimers,1000);
 </script>
